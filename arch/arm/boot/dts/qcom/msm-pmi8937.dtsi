@@ -393,6 +393,8 @@
 			#pwm-cells = <2>;
 		};
 
+		/*[BUGFIX]-Mod-BEGIN by SCDTABLET.jinghuang@tcl.com,02/17/2016,1623428,set lcd backlight max current to 20Ma for each line*/
+		/*[BUGFIX]-Mod-BEGIN by SCDTABLET.jinghuang@tcl.com,01/27/2016,1532320,modify backlight control and the max level and the limit current.*/
 		wled: qcom,leds@d800 {
 			compatible = "qcom,qpnp-wled";
 			reg = <0xd800 0x100>,
@@ -408,7 +410,7 @@
 			qcom,vref-mv = <350>;
 			qcom,switch-freq-khz = <800>;
 			qcom,ovp-mv = <29500>;
-			qcom,ilim-ma = <980>;
+			qcom,ilim-ma = <1200>;
 			qcom,boost-duty-ns = <26>;
 			qcom,mod-freq-khz = <9600>;
 			qcom,dim-mode = "hybrid";
@@ -417,9 +419,11 @@
 			qcom,sync-dly-us = <800>;
 			qcom,fs-curr-ua = <20000>;
 			qcom,en-phase-stag;
-			qcom,led-strings-list = [00 01];
+			qcom,led-strings-list = [00 01 02 03];
 			qcom,en-ext-pfet-sc-pro;
 		};
+		/*[BUGFIX]-Mod-END by SCDTABLET.jinghuang@tcl.com*/
+		/*[BUGFIX]-Mod-END by SCDTABLET.jinghuang@tcl.com*/
 
 		flash_led: qcom,leds@d300 {
 			compatible = "qcom,qpnp-flash-led";
@@ -508,7 +512,7 @@
 			qcom,wave-play-rate-us = <5263>;
 			qcom,actuator-type = "lra";
 			qcom,wave-shape = "square";
-			qcom,vmax-mv = <2700>;
+			qcom,vmax-mv = <2000>;
 			qcom,ilim-ma = <800>;
 			qcom,sc-deb-cycles = <8>;
 			qcom,int-pwm-freq-khz = <505>;

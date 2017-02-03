@@ -28,6 +28,17 @@
 };
 
 &soc {
+	hall:qcom,hall {
+		cell-index = <0>;
+		compatible = "qcom,hall";
+		interrupt-parent = <&tlmm>;
+		interrupts = <97 0x2>;
+		interrupt-gpios = <&tlmm 97 0x00>;
+		vdd-supply = <&pm8937_l6>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&hall_default>;
+	};
+
 	gpio_keys {
 		compatible = "gpio-keys";
 		input-name = "gpio-keys";
@@ -35,27 +46,30 @@
 		pinctrl-0 = <&gpio_key_active>;
 		pinctrl-1 = <&gpio_key_suspend>;
 
-		camera_focus {
-			label = "camera_focus";
-			gpios = <&tlmm 128 0x1>;
-			linux,input-type = <1>;
-			linux,code = <0x210>;
-			debounce-interval = <15>;
-		};
+		/*Removed start by TCTSZ falin.luo, camera physical keys was not used*/
+		//camera_focus {
+		//	label = "camera_focus";
+		//	gpios = <&tlmm 128 0x1>;
+		//	linux,input-type = <1>;
+		//	linux,code = <0x210>;
+		//	debounce-interval = <15>;
+		//};
 
-		camera_snapshot {
-			label = "camera_snapshot";
-			gpios = <&tlmm 127 0x1>;
-			linux,input-type = <1>;
-			linux,code = <0x2fe>;
-			debounce-interval = <15>;
-		};
+		//camera_snapshot {
+		//	label = "camera_snapshot";
+		//	gpios = <&tlmm 127 0x1>;
+		//	linux,input-type = <1>;
+		//	linux,code = <0x2fe>;
+		//	debounce-interval = <15>;
+		//};
+		/*Removed end by TCTSZ falin.luo, camera physical keys was not used*/
 
 		vol_up {
 			label = "volume_up";
 			gpios = <&tlmm 91 0x1>;
 			linux,input-type = <1>;
 			linux,code = <115>;
+			gpio-key,wakeup;
 			debounce-interval = <15>;
 		};
 	};
@@ -103,6 +117,115 @@
 	};
 };
 
+&i2c_3 {
+	status = "ok";
+	goodix@14 {
+		compatible = "goodix,gt9xx";
+		reg = <0x14>;
+                interrupt-parent = <&tlmm>;
+                interrupts = <65 0>;
+                avdd-supply = <&pm8937_l10>;
+                vdd-supply = <&pm8937_l10>;
+		vcc-i2c-supply = <&pm8937_l5>;
+                interrupt-gpios = <&tlmm 65 0x00>;
+                reset-gpios = <&tlmm 64 0x00>;
+
+                pinctrl-names = "pmx_ts_active","pmx_ts_suspend",
+                        "pmx_ts_release";
+                pinctrl-0 = <&ts_int_active &ts_reset_active>;
+                pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+                pinctrl-2 = <&ts_release>;
+
+		goodix,panel-coords =<0 0 800 1400>;
+		goodix,display-coords = <0 0 800 1280>;
+		goodix,button-map= <158 102 139>;
+		regulator-min-microvolt = <2800000>;
+		regulator-max-microvolt = <2800000>;
+		goodix,family-id = <0x0>;
+		goodix,i2c-pull-up;
+		goodix,product-id="9271";
+		goodix,cfg-data = [
+			4D D0 02 00 05 05 34 C1 01 0F 23 5F 50 32 03 05 00 00 00 00 00 00 00 14 14 1E 14 8A 0A 0A 51 00 D3
+			07 00 00 00 81 33 1D 3C 01 00 00 00 00 00 00 00 00 00 4E 78 90 D5 01 02 00 00 04 88 51 00 84 58 00
+			80 60 00 76 69 00 73 73 00 78 10 30 48 00 F0 40 30 AA AA 27 70 20 22 22 02 00 00 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00 00 00 00 02 04 06 08 0A 0C 0E 14 12 10 FF FF FF FF 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00 24 18 22 1C 21 1D 20 1E 1F 16 02 0F 04 10 06 12 08 13 0A 00 FF FF FF
+			FF FF FF 00 00 00 F4 FF FF FF FF FF FF FF FF 47 FF FF FF 2D 01
+			];
+		goodix,cfg-data_100um = [
+			4D D0 02 00 05 05 34 C1 01 0F 23 5F 50 32 03 05 00 00 00 00 00 00 00 14 14 1E 14 8A 0A 0A 51 00 D3
+			07 00 00 00 81 33 1D 3C 01 00 00 00 00 00 00 00 00 00 4E 78 90 D5 01 02 00 00 04 88 51 00 84 58 00
+			80 60 00 76 69 00 73 73 00 78 10 30 48 00 F0 40 30 AA AA 27 70 20 22 22 02 00 00 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00 00 00 00 02 04 06 08 0A 0C 0E 14 12 10 FF FF FF FF 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00 24 18 22 1C 21 1D 20 1E 1F 16 02 0F 04 10 06 12 08 13 0A 00 FF FF FF
+			FF FF FF 00 00 00 F4 FF FF FF FF FF FF FF FF 47 FF FF FF 2D 01
+			];
+
+	};
+
+	focaltech@38{
+	    compatible = "focaltech,fts";
+	    reg = <0x38>;
+	    interrupt-parent = <&tlmm>;
+	    interrupts = <65 0x2>;
+	    vdd-supply = <&pm8937_l10>;
+	    vcc_i2c-supply = <&pm8937_l5>;
+	    /* pins used by touchscreen */
+	    pinctrl-names = "pmx_ts_active","pmx_ts_suspend";
+	    pinctrl-0 = <&ts_int_active &ts_reset_active>;
+	    pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+	    focaltech,name = "ft5626";
+	    focaltech,family-id = <0x58>;
+	    focaltech,reset-gpio = <&tlmm 64 0x00>;
+	    focaltech,irq-gpio = <&tlmm 65 0x02>;
+	    focaltech,display-coords = <0 0 1200 1920>;
+	    focaltech,panel-coords = <0 0 1200 1920>;
+	    //focaltech,button-map= <139 102 158>;
+	    focaltech,no-force-update;
+	    focaltech,i2c-pull-up;
+	    focaltech,group-id = <1>;
+	    focaltech,hard-reset-delay-ms = <20>;
+	    focaltech,soft-reset-delay-ms = <150>;
+	    focaltech,num-max-touches = <10>;
+	    //focaltech,fw-name = "ft_8610_qrd_fw.bin";
+	    focaltech,fw-delay-aa-ms = <100>;
+	    focaltech,fw-delay-55-ms = <30>;
+	    focaltech,fw-upgrade-id1 = <0x79>;
+	    focaltech,fw-upgrade-id2 = <0x08>;
+	    focaltech,fw-delay-readid-ms = <10>;
+	    focaltech,fw-delay-era-flsh-ms = <2000>;
+	    //focaltech,fw-auto-cal;
+	    focaltech,ignore-id-check;
+	};
+
+	synaptics@20 {
+		compatible = "synaptics,dsx-i2c";
+		reg = <0x20>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <65 0x2>;
+		vdd-supply = <&pm8937_l10>;
+		vcc_i2c-supply = <&pm8937_l5>;
+		synaptics,pwr-reg-name = "avdd";
+		synaptics,bus-reg-name = "vdd";
+		/* pins used by touchscreen */
+		pinctrl-names = "pmx_ts_active","pmx_ts_suspend";
+		pinctrl-0 = <&ts_int_active &ts_reset_active>;
+		pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+		/*synaptics,fw-name = "PR1812284.img";*/
+		synaptics,irq-gpio = <&tlmm 65 0x2008>;
+		synaptics,reset-gpio = <&tlmm 64 0x00>;
+		synaptics,irq-on-state = <0>;
+		synaptics,power-delay-ms = <200>;
+		synaptics,reset-delay-ms = <200>;
+		synaptics,reset-on-state = <0>;
+		synaptics,reset-active-ms = <20>;
+		/*synaptics,disable-gpios;*/
+		/*synaptics,display-coords = <0 0 599 1023>;*/
+		/*synaptics,panel-coords = <0 0 599 1023>;*/
+		synaptics,cap-button-codes = <158 172 580>;
+	};
+};
+
 &i2c_5 { /* BLSP2 QUP1 */
 	nq@28 {
 		compatible = "qcom,nq-nci";
@@ -119,7 +242,30 @@
 		pinctrl-0 = <&nfc_int_active &nfc_disable_active>;
 		pinctrl-1 = <&nfc_int_suspend &nfc_disable_suspend>;
 		clocks = <&clock_gcc clk_bb_clk2_pin>;
-		clock-names = "ref_clk";
+		clock-names = "ref_clk";//[BUGFIX]-MOD-BY bao.li disable NFC 20160509
+		status = "disabled";
+	};
+
+	adux1050@2c {
+		compatible = "adi,adux1050";
+		reg = <0x2c>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <43 0x2>;
+		interrupt-gpios = <&tlmm 43 0x00>;
+		interrupts-name = "adux1050_2c";
+		/*vdd-supply = <&pm8937_l10>;*/
+		vio-supply = <&pm8937_l6>;
+		enable-gpios = <&tlmm 47 0x00>;
+		adi,adux1050_reg = [00010242 00020538 000301EE 00050F77 00061908 000700d0 00080096 00090000 000a0003 00798000];
+		/*Signifies the required Baseline for the device*/
+		adi,adux1050_stg0_base = [ 00010000 ];
+		adi,adux1050_stg1_base = [ 00020000 ];
+		adi,adux1050_stg2_base = [ 00030000 ];
+		adi,adux1050_stg3_base = [ 00040000 ];
+		adi,adux1050_irq_flags = [ 00000002 ];  /* Signifies the irq Flag, If not set it will be set to IRQF_TRIGGER_FALLING*/
+		pinctrl-names = "iqs128_int_active", "iqs128_int_deactive";
+		pinctrl-0 = <&iqs128_int_active>;
+		pinctrl-1 = <&iqs128_int_deactive>;
 	};
 };
 
@@ -195,6 +341,9 @@
 };
 
 #include "msm8937-mdss-panels.dtsi"
+#include "dsi-panel-nt51021b-1200p-video.dtsi"
+#include "dsi-panel-nt51021b-1200p-video-dpt.dtsi"
+#include "dsi-panel-nt51021b-1200p-video-tdt.dtsi"
 
 &mdss_mdp {
 	qcom,mdss-pref-prim-intf = "dsi";
@@ -205,7 +354,7 @@
 };
 
 &mdss_dsi0 {
-	qcom,dsi-pref-prim-pan = <&dsi_truly_1080_vid>;
+	qcom,dsi-pref-prim-pan = <&dsi_nt51021b_1200p_video>;
 	pinctrl-names = "mdss_default", "mdss_sleep";
 	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
 	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
@@ -214,6 +363,7 @@
 	qcom,platform-enable-gpio = <&tlmm 99 0>;
 	qcom,platform-reset-gpio = <&tlmm 60 0>;
 	qcom,platform-bklight-en-gpio = <&tlmm 98 0>;
+	qcom,platform-power-3v3-gpio = <&tlmm 44 0>;
 };
 
 &mdss_dsi1 {
@@ -229,17 +379,17 @@
 	qcom,platform-bklight-en-gpio = <&tlmm 98 0>;
 };
 
-&dsi_truly_1080_vid {
-	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+&dsi_nt51021b_1200p_video {
+	/*qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;*/
 	qcom,mdss-dsi-pan-enable-dynamic-fps;
 	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
 };
 
-&dsi_truly_1080_cmd {
-	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+&dsi_nt51021b_1200p_video {
+	/*qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;*/
 	qcom,ulps-enabled;
 	qcom,partial-update-enabled;
-	qcom,panel-roi-alignment = <2 2 4 2 1080 2>;
+	/*qcom,panel-roi-alignment = <2 2 4 2 1080 2>;*/
 };
 
 &dsi_truly_720_vid {

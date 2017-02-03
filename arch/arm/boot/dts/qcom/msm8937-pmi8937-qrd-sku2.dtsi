@@ -96,7 +96,7 @@
 		qcom,y-offset = <0>;
 	};
 };
-
+#include "dsi-panel-nt51021b-1200p-video.dtsi"
 &mdss_mdp {
 	qcom,mdss-pref-prim-intf = "dsi";
 };
@@ -106,13 +106,16 @@
 };
 
 &mdss_dsi0 {
-	qcom,dsi-pref-prim-pan = <&dsi_hx8394f_720p_video>;
+	qcom,dsi-pref-prim-pan = <&dsi_nt51021b_1200p_video>;
 	pinctrl-names = "mdss_default", "mdss_sleep";
 	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
 	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
 
 	qcom,platform-te-gpio = <&tlmm 24 0>;
+	qcom,platform-enable-gpio = <&tlmm 99 0>;
 	qcom,platform-reset-gpio = <&tlmm 60 0>;
+	qcom,platform-bklight-en-gpio = <&tlmm 98 0>;
+	qcom,platform-power-3v3-gpio = <&tlmm 44 0>;
 };
 
 &pmi_haptic {
@@ -124,9 +127,8 @@
 	status = "disabled";
 };
 
-&dsi_hx8394f_720p_video {
-	qcom,esd-check-enabled;
-	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+&dsi_nt51021b_1200p_video {
+	/*qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;*/
 };
 
 &sdc2_cmd_on {
